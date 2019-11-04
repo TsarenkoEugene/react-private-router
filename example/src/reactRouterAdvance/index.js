@@ -1,7 +1,6 @@
 /* eslint-disable */
 import React, { useRef, useState, useEffect } from 'react';
-import styled from 'styled-components';
-import { Redirect, Route, matchPath } from 'react-router-dom';
+import { matchPath, Redirect, Route } from 'react-router-dom';
 
 /*! *****************************************************************************
 Copyright (c) Microsoft Corporation. All rights reserved.
@@ -66,26 +65,6 @@ function __generator(thisArg, body) {
     }
 }
 
-function __makeTemplateObject(cooked, raw) {
-    if (Object.defineProperty) { Object.defineProperty(cooked, "raw", { value: raw }); } else { cooked.raw = raw; }
-    return cooked;
-}
-
-var Wrapper = styled.div(templateObject_1 || (templateObject_1 = __makeTemplateObject(["\n  padding: 10px;\n  color: red;\n"], ["\n  padding: 10px;\n  color: red;\n"])));
-var TestComponent = function (_a) {
-    var text = _a.text;
-    return (React.createElement(Wrapper, null, text ? text : 'Test Component'));
-};
-var templateObject_1;
-//# sourceMappingURL=TestComponent.js.map
-
-// import classNames from 'classnames';
-// const ExtentedRouterStatus = {
-//   INITIAL: 'initial',
-//   LOADING: 'loading',
-//   SUCCESS: 'success',
-//   FAIL: 'fail',
-// };
 var ExtentedRouterStatus;
 (function (ExtentedRouterStatus) {
     ExtentedRouterStatus[ExtentedRouterStatus["INITIAL"] = 0] = "INITIAL";
@@ -93,6 +72,92 @@ var ExtentedRouterStatus;
     ExtentedRouterStatus[ExtentedRouterStatus["SUCCESS"] = 2] = "SUCCESS";
     ExtentedRouterStatus[ExtentedRouterStatus["FAIL"] = 3] = "FAIL";
 })(ExtentedRouterStatus || (ExtentedRouterStatus = {}));
+//# sourceMappingURL=types.js.map
+
+var checkIfPathIsUndefined = function (path) {
+    if (typeof path === 'undefined') {
+        throw new Error("Path for component is undefined. Please provide path");
+    }
+};
+var checkGuards = function (guards) { return __awaiter(void 0, void 0, void 0, function () {
+    var result, _i, guards_1, guard, guardResult, e_1, isOk;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                result = [];
+                _i = 0, guards_1 = guards;
+                _a.label = 1;
+            case 1:
+                if (!(_i < guards_1.length)) return [3 /*break*/, 6];
+                guard = guards_1[_i];
+                _a.label = 2;
+            case 2:
+                _a.trys.push([2, 4, , 5]);
+                return [4 /*yield*/, guard.CanActivate()];
+            case 3:
+                guardResult = _a.sent();
+                result.push(guardResult);
+                return [3 /*break*/, 5];
+            case 4:
+                e_1 = _a.sent();
+                result.push(false);
+                console.error('Error in guards');
+                console.error(e_1);
+                return [3 /*break*/, 5];
+            case 5:
+                _i++;
+                return [3 /*break*/, 1];
+            case 6:
+                isOk = !result.some(function (i) { return !i; });
+                return [2 /*return*/, isOk ? ExtentedRouterStatus.SUCCESS : ExtentedRouterStatus.FAIL];
+        }
+    });
+}); };
+var isMatch = function (basePath, path) {
+    var match = matchPath(basePath, {
+        path: path,
+        exact: false,
+        strict: true,
+    });
+    return (match && match.isExact) || basePath.startsWith(path);
+};
+var isChildPathStartWithParent = function (parentPath, childPath) {
+    checkIfPathIsUndefined(childPath);
+    checkIfPathIsUndefined(parentPath);
+    if (Array.isArray(childPath) && Array.isArray(parentPath)) {
+        return childPath.every(function (chPt) {
+            var isOneOfParentPathMatched = parentPath.some(function (pPt) { return isMatch(pPt, chPt); });
+            return isOneOfParentPathMatched;
+        });
+    }
+    else if (Array.isArray(parentPath) && !Array.isArray(childPath)) {
+        return parentPath.some(function (pt) { return isMatch(pt, childPath); });
+    }
+    else if (!Array.isArray(parentPath) && Array.isArray(childPath)) {
+        return childPath.every(function (chPt) {
+            var isOneOfParentPathMatched = isMatch(parentPath, chPt);
+            return isOneOfParentPathMatched;
+        });
+    }
+    return isMatch(parentPath, childPath);
+};
+var isPathMatched = function (basePath, path) {
+    checkIfPathIsUndefined(path);
+    if (Array.isArray(path)) {
+        var matchArray = path.map(function (pt) { return isMatch(basePath, pt); });
+        return matchArray.some(function (match) { return match === true; });
+    }
+    return isMatch(basePath, path);
+};
+var setKey = function (path) {
+    checkIfPathIsUndefined(path);
+    if (Array.isArray(path)) {
+        return path.join();
+    }
+    return path;
+};
+//# sourceMappingURL=helpers.js.map
+
 var ExtendedRouter = function (_a) {
     var _b;
     var path = _a.path, component = _a.component, redirectUrl = _a.redirectUrl, _c = _a.guards, guards = _c === void 0 ? [] : _c, _d = _a.resolvers, resolvers = _d === void 0 ? [] : _d, _e = _a.debounceWaitTime, debounceWaitTime = _e === void 0 ? 500 : _e, _f = _a.childs, childs = _f === void 0 ? [] : _f, redirectToChild = _a.redirectToChild, exact = _a.exact, location = _a.location;
@@ -104,44 +169,10 @@ var ExtendedRouter = function (_a) {
     var _g = useState(ExtentedRouterStatus.INITIAL), status = _g[0], setStatus = _g[1];
     var resultComponents = (_b = {},
         _b[ExtentedRouterStatus.INITIAL] = null,
-        _b[ExtentedRouterStatus.LOADING] = null,
+        _b[ExtentedRouterStatus.LOADING] = React.createElement("h1", null, "Loading"),
         _b[ExtentedRouterStatus.SUCCESS] = null,
         _b[ExtentedRouterStatus.FAIL] = React.createElement(Redirect, { to: redirectUrl || '/' }),
         _b);
-    var checkGuards = function () { return __awaiter(void 0, void 0, void 0, function () {
-        var result, _i, guards_1, guard, guardResult, e_1, isOk;
-        return __generator(this, function (_a) {
-            switch (_a.label) {
-                case 0:
-                    result = [];
-                    _i = 0, guards_1 = guards;
-                    _a.label = 1;
-                case 1:
-                    if (!(_i < guards_1.length)) return [3 /*break*/, 6];
-                    guard = guards_1[_i];
-                    _a.label = 2;
-                case 2:
-                    _a.trys.push([2, 4, , 5]);
-                    return [4 /*yield*/, guard.CanActivate()];
-                case 3:
-                    guardResult = _a.sent();
-                    result.push(guardResult);
-                    return [3 /*break*/, 5];
-                case 4:
-                    e_1 = _a.sent();
-                    result.push(false);
-                    console.error('Error in guards');
-                    console.error(e_1);
-                    return [3 /*break*/, 5];
-                case 5:
-                    _i++;
-                    return [3 /*break*/, 1];
-                case 6:
-                    isOk = !result.some(function (i) { return !i; });
-                    return [2 /*return*/, isOk ? ExtentedRouterStatus.SUCCESS : ExtentedRouterStatus.FAIL];
-            }
-        });
-    }); };
     var startTimer = function () {
         savedTimer.current = setInterval(function () {
             if (savedTime.current + debounceWaitTime < Date.now()) {
@@ -156,19 +187,15 @@ var ExtendedRouter = function (_a) {
     };
     useEffect(function () {
         (function () { return __awaiter(void 0, void 0, void 0, function () {
-            var match, guardStatus, _a, promises;
+            var isMatch, guardStatus, _a, promises;
             return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0:
-                        match = matchPath(location.pathname, {
-                            path: path,
-                            exact: false,
-                            strict: true,
-                        });
-                        if (!((match && match.isExact) || location.pathname.startsWith(path))) return [3 /*break*/, 6];
+                        isMatch = isPathMatched(location.pathname, path);
+                        if (!isMatch) return [3 /*break*/, 6];
                         startTimer();
                         if (!guards.length) return [3 /*break*/, 2];
-                        return [4 /*yield*/, checkGuards()];
+                        return [4 /*yield*/, checkGuards(guards)];
                     case 1:
                         _a = _b.sent();
                         return [3 /*break*/, 3];
@@ -195,16 +222,15 @@ var ExtendedRouter = function (_a) {
             });
         }); })();
     }, [location.pathname]);
-    var compareChildAndParentPath = function (childPath, parentPath) { return childPath.startsWith(parentPath); };
     var Component = component;
     if (status === ExtentedRouterStatus.SUCCESS) {
         if (childs.length) {
             var childRoutes_1 = childs.map(function (route) {
-                var isValidChildPath = compareChildAndParentPath(route.path, path);
+                var isValidChildPath = isChildPathStartWithParent(route.path, path);
                 if (!isValidChildPath) {
                     throw new Error("Child must start with parent path; Parent " + path + " Child " + route.path);
                 }
-                return React.createElement(ExtendedRouter, __assign({}, route, { key: route.path, redirectUrl: redirectUrl, location: location }));
+                return React.createElement(ExtendedRouter, __assign({}, route, { key: setKey(route.path), redirectUrl: redirectUrl, location: location }));
             });
             return (React.createElement(Route, { exact: exact, path: path, render: function (props) {
                     if (childs.length && props.location.pathname === path && redirectToChild !== false) {
@@ -219,5 +245,6 @@ var ExtendedRouter = function (_a) {
     }
     return resultComponents[status];
 };
+//# sourceMappingURL=index.js.map
 
-export { ExtendedRouter, TestComponent };
+export { ExtendedRouter };

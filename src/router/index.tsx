@@ -1,24 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Redirect, Route, matchPath } from 'react-router-dom';
-// import { matchPattern } from 'typed-url-matcher';
-// import test from 'url-matcher';
-// import LoadingPage from '@common/components/loading-page';
-import { OwnProps } from './types';
-// import classNames from 'classnames';
+import { Redirect, Route } from 'react-router-dom';
+import { ExtendedRouterProps, ExtentedRouterStatus } from './types';
 
-// const ExtentedRouterStatus = {
-//   INITIAL: 'initial',
-//   LOADING: 'loading',
-//   SUCCESS: 'success',
-//   FAIL: 'fail',
-// };
-
-enum ExtentedRouterStatus {
-  INITIAL,
-  LOADING,
-  SUCCESS,
-  FAIL,
-}
+import { checkGuards, isPathMatched, setKey, isChildPathStartWithParent } from './helpers';
 
 const ExtendedRouter = ({
   path,
@@ -31,7 +15,7 @@ const ExtendedRouter = ({
   redirectToChild,
   exact,
   location,
-}: OwnProps) => {
+}: ExtendedRouterProps) => {
   if (typeof location === 'undefined') {
     throw new Error('Extended router must be wrapper in usual router!');
   }
@@ -42,26 +26,9 @@ const ExtendedRouter = ({
 
   const resultComponents = {
     [ExtentedRouterStatus.INITIAL]: null,
-    [ExtentedRouterStatus.LOADING]: null,
+    [ExtentedRouterStatus.LOADING]: <h1>Loading</h1>,
     [ExtentedRouterStatus.SUCCESS]: null,
     [ExtentedRouterStatus.FAIL]: <Redirect to={redirectUrl || '/'} />,
-  };
-
-  const checkGuards = async () => {
-    const result = [];
-    for (const guard of guards) {
-      try {
-        const guardResult = await guard.CanActivate();
-        result.push(guardResult);
-      } catch (e) {
-        result.push(false);
-        console.error('Error in guards');
-        console.error(e);
-      }
-    }
-    const isOk = !result.some(i => !i);
-
-    return isOk ? ExtentedRouterStatus.SUCCESS : ExtentedRouterStatus.FAIL;
   };
 
   const startTimer = () => {
@@ -78,16 +45,12 @@ const ExtendedRouter = ({
   };
   useEffect(() => {
     (async () => {
-      const match = matchPath(location.pathname, {
-        path,
-        exact: false,
-        strict: true,
-      });
+      const isMatch = isPathMatched(location.pathname, path);
 
-      if ((match && match.isExact) || location.pathname.startsWith(path)) {
+      if (isMatch) {
         startTimer();
 
-        const guardStatus = guards.length ? await checkGuards() : ExtentedRouterStatus.SUCCESS;
+        const guardStatus = guards.length ? await checkGuards(guards) : ExtentedRouterStatus.SUCCESS;
 
         if (status === ExtentedRouterStatus.SUCCESS && resolvers.length) {
           const promises = resolvers.map(resolver => resolver.Resolve());
@@ -104,17 +67,15 @@ const ExtendedRouter = ({
     })();
   }, [location.pathname]);
 
-  const compareChildAndParentPath = (childPath: string, parentPath: string) => childPath.startsWith(parentPath);
-
   const Component = component;
   if (status === ExtentedRouterStatus.SUCCESS) {
     if (childs.length) {
       const childRoutes = childs.map(route => {
-        const isValidChildPath = compareChildAndParentPath(route.path, path);
+        const isValidChildPath = isChildPathStartWithParent(route.path, path);
         if (!isValidChildPath) {
           throw new Error(`Child must start with parent path; Parent ${path} Child ${route.path}`);
         }
-        return <ExtendedRouter {...route} key={route.path} redirectUrl={redirectUrl} location={location} />;
+        return <ExtendedRouter {...route} key={setKey(route.path)} redirectUrl={redirectUrl} location={location} />;
       });
       return (
         <Route
@@ -123,7 +84,7 @@ const ExtendedRouter = ({
           render={props => {
             if (childs.length && props.location.pathname === path && redirectToChild !== false) {
               const childRedirectUrl = redirectToChild || childs[0].path;
-              props.history.push(childRedirectUrl);
+              props.history.push(childRedirectUrl as string);
               return;
             }
 
@@ -138,5 +99,7 @@ const ExtendedRouter = ({
 
   return resultComponents[status];
 };
+
+// const initializeRouter = () =>
 
 export default ExtendedRouter;

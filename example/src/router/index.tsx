@@ -5,6 +5,8 @@ import { ExtendedRouter } from '../reactRouterAdvance';
 
 import { history } from './history';
 
+import { TestGuard } from '../guards/test.guard';
+
 import { HomePage } from '../pages/home';
 import { SecondPage } from '../pages/second';
 import { ChildPage } from '../pages/second/child-page';
@@ -22,12 +24,12 @@ export const Routes = () => (
         component={SecondPage}
         childs={[
           {
-            path: '/test/1234',
+            guards: [new TestGuard()],
+            path: '/test/:id',
             component: ChildPage,
           },
         ]}
       />
-      {/* <TestComponent text="Styled Component from React library" /> */}
     </Switch>
   </Router>
 );
