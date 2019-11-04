@@ -1,7 +1,7 @@
 import React from 'react';
 import { Switch, Router, Link } from 'react-router-dom';
 
-import { CustomRoute } from '../reactRouterAdvance';
+import { ExtendedRouter } from '../reactRouterAdvance';
 
 import { history } from './history';
 
@@ -14,8 +14,8 @@ export const Routes = () => (
     <Link to="/">Home page</Link>
     <Link to="/test">Test page</Link>
     <Switch>
-      <CustomRoute exact={true} path="/" component={HomePage} />
-      <CustomRoute
+      <ExtendedRouter exact={true} path="/" component={HomePage} />
+      <ExtendedRouter
         // exact={true}
         path="/test"
         redirectToChild={null}

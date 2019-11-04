@@ -77,6 +77,7 @@ var TestComponent = function (_a) {
     return (React.createElement(Wrapper, null, text ? text : 'Test Component'));
 };
 var templateObject_1;
+//# sourceMappingURL=TestComponent.js.map
 
 // import classNames from 'classnames';
 // const ExtentedRouterStatus = {
@@ -92,7 +93,7 @@ var ExtentedRouterStatus;
     ExtentedRouterStatus[ExtentedRouterStatus["SUCCESS"] = 2] = "SUCCESS";
     ExtentedRouterStatus[ExtentedRouterStatus["FAIL"] = 3] = "FAIL";
 })(ExtentedRouterStatus || (ExtentedRouterStatus = {}));
-var CustomRoute = function (_a) {
+var ExtendedRouter = function (_a) {
     var _b;
     var path = _a.path, component = _a.component, redirectUrl = _a.redirectUrl, _c = _a.guards, guards = _c === void 0 ? [] : _c, _d = _a.resolvers, resolvers = _d === void 0 ? [] : _d, _e = _a.debounceWaitTime, debounceWaitTime = _e === void 0 ? 500 : _e, _f = _a.childs, childs = _f === void 0 ? [] : _f, redirectToChild = _a.redirectToChild, 
     // exact,
@@ -206,7 +207,7 @@ var CustomRoute = function (_a) {
                 if (!isValidChildPath) {
                     throw new Error("Child must start with parent path; Parent " + path + " Child " + route.path);
                 }
-                return React.createElement(CustomRoute, __assign({}, route, { exact: false, key: route.path, redirectUrl: redirectUrl, location: location }));
+                return React.createElement(ExtendedRouter, __assign({}, route, { exact: false, key: route.path, redirectUrl: redirectUrl, location: location }));
             });
             return (React.createElement(Route, { exact: false, path: path, render: function (props) {
                     if (childs.length && props.location.pathname === path && redirectToChild !== null) {
@@ -224,5 +225,6 @@ var CustomRoute = function (_a) {
     }
     return resultComponents[status];
 };
+//# sourceMappingURL=index.js.map
 
-export { CustomRoute, TestComponent };
+export { ExtendedRouter, TestComponent };

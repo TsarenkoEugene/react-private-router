@@ -1,2 +1,2 @@
 export { TestComponent, TestComponentProps } from './components/TestComponent/TestComponent';
-export { default as CustomRoute } from './router';
+export { default as ExtendedRouter } from './router';

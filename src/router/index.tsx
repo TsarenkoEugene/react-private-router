@@ -20,7 +20,7 @@ enum ExtentedRouterStatus {
   FAIL,
 }
 
-const CustomRoute = ({
+const ExtendedRouter = ({
   path,
   component,
   redirectUrl,
@@ -117,7 +117,7 @@ const CustomRoute = ({
         if (!isValidChildPath) {
           throw new Error(`Child must start with parent path; Parent ${path} Child ${route.path}`);
         }
-        return <CustomRoute {...route} exact={false} key={route.path} redirectUrl={redirectUrl} location={location} />;
+        return <ExtendedRouter {...route} exact={false} key={route.path} redirectUrl={redirectUrl} location={location} />;
       });
 
       return (
@@ -145,4 +145,4 @@ const CustomRoute = ({
   return resultComponents[status];
 };
 
-export default CustomRoute;
+export default ExtendedRouter;
