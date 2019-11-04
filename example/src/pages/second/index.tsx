@@ -8,11 +8,12 @@ const StyledDiv = styled.div`
   color: white;
 `;
 
-export const SecondPage = ({ childRoutes }) => (
+export const SecondPage = ({ childRoutes }: { childRoutes: any }) => (
   <StyledDiv>
     Test page
+    {console.log('tst')}
     {/* {console.log('CHILD', childs)} */}
     <Link to="/test/1234">Link page</Link>
-    {childRoutes}
+    <Switch>{childRoutes}</Switch>
   </StyledDiv>
 );

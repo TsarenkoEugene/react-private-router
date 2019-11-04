@@ -95,10 +95,7 @@ var ExtentedRouterStatus;
 })(ExtentedRouterStatus || (ExtentedRouterStatus = {}));
 var ExtendedRouter = function (_a) {
     var _b;
-    var path = _a.path, component = _a.component, redirectUrl = _a.redirectUrl, _c = _a.guards, guards = _c === void 0 ? [] : _c, _d = _a.resolvers, resolvers = _d === void 0 ? [] : _d, _e = _a.debounceWaitTime, debounceWaitTime = _e === void 0 ? 500 : _e, _f = _a.childs, childs = _f === void 0 ? [] : _f, redirectToChild = _a.redirectToChild, 
-    // exact,
-    location = _a.location;
-    // console.log(path, component);
+    var path = _a.path, component = _a.component, redirectUrl = _a.redirectUrl, _c = _a.guards, guards = _c === void 0 ? [] : _c, _d = _a.resolvers, resolvers = _d === void 0 ? [] : _d, _e = _a.debounceWaitTime, debounceWaitTime = _e === void 0 ? 500 : _e, _f = _a.childs, childs = _f === void 0 ? [] : _f, redirectToChild = _a.redirectToChild, exact = _a.exact, location = _a.location;
     if (typeof location === 'undefined') {
         throw new Error('Extended router must be wrapper in usual router!');
     }
@@ -108,6 +105,7 @@ var ExtendedRouter = function (_a) {
     var resultComponents = (_b = {},
         _b[ExtentedRouterStatus.INITIAL] = null,
         _b[ExtentedRouterStatus.LOADING] = null,
+        _b[ExtentedRouterStatus.SUCCESS] = null,
         _b[ExtentedRouterStatus.FAIL] = React.createElement(Redirect, { to: redirectUrl || '/' }),
         _b);
     var checkGuards = function () { return __awaiter(void 0, void 0, void 0, function () {
@@ -167,7 +165,7 @@ var ExtendedRouter = function (_a) {
                             exact: false,
                             strict: true,
                         });
-                        if (!(match && match.isExact)) return [3 /*break*/, 6];
+                        if (!((match && match.isExact) || location.pathname.startsWith(path))) return [3 /*break*/, 6];
                         startTimer();
                         if (!guards.length) return [3 /*break*/, 2];
                         return [4 /*yield*/, checkGuards()];
@@ -200,31 +198,26 @@ var ExtendedRouter = function (_a) {
     var compareChildAndParentPath = function (childPath, parentPath) { return childPath.startsWith(parentPath); };
     var Component = component;
     if (status === ExtentedRouterStatus.SUCCESS) {
-        // console.log(childs.length);
         if (childs.length) {
             var childRoutes_1 = childs.map(function (route) {
                 var isValidChildPath = compareChildAndParentPath(route.path, path);
                 if (!isValidChildPath) {
                     throw new Error("Child must start with parent path; Parent " + path + " Child " + route.path);
                 }
-                return React.createElement(ExtendedRouter, __assign({}, route, { exact: false, key: route.path, redirectUrl: redirectUrl, location: location }));
+                return React.createElement(ExtendedRouter, __assign({}, route, { key: route.path, redirectUrl: redirectUrl, location: location }));
             });
-            return (React.createElement(Route, { exact: false, path: path, render: function (props) {
-                    if (childs.length && props.location.pathname === path && redirectToChild !== null) {
+            return (React.createElement(Route, { exact: exact, path: path, render: function (props) {
+                    if (childs.length && props.location.pathname === path && redirectToChild !== false) {
                         var childRedirectUrl = redirectToChild || childs[0].path;
                         props.history.push(childRedirectUrl);
-                        console.log('RETIURM');
                         return;
                     }
-                    console.log('NOT RETURN', childRoutes_1);
-                    return React.createElement(Component, __assign({}, props, { exact: false, childRoutes: childRoutes_1 }));
+                    return React.createElement(Component, __assign({}, props, { exact: exact, childRoutes: childRoutes_1 }));
                 } }));
         }
-        console.log('NOT CHILDS', path);
-        return React.createElement(Route, { exact: false, path: path, render: function (props) { return React.createElement(Component, __assign({}, props, { exact: false })); } });
+        return React.createElement(Route, { exact: exact, path: path, render: function (props) { return React.createElement(Component, __assign({}, props)); } });
     }
     return resultComponents[status];
 };
-//# sourceMappingURL=index.js.map
 
 export { ExtendedRouter, TestComponent };

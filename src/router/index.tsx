@@ -3,7 +3,7 @@ import { Redirect, Route, matchPath } from 'react-router-dom';
 // import { matchPattern } from 'typed-url-matcher';
 // import test from 'url-matcher';
 // import LoadingPage from '@common/components/loading-page';
-import { IProps } from './types';
+import { OwnProps } from './types';
 // import classNames from 'classnames';
 
 // const ExtentedRouterStatus = {
@@ -29,10 +29,9 @@ const ExtendedRouter = ({
   debounceWaitTime = 500,
   childs = [],
   redirectToChild,
-  // exact,
+  exact,
   location,
-}: IProps) => {
-  // console.log(path, component);
+}: OwnProps) => {
   if (typeof location === 'undefined') {
     throw new Error('Extended router must be wrapper in usual router!');
   }
@@ -44,15 +43,14 @@ const ExtendedRouter = ({
   const resultComponents = {
     [ExtentedRouterStatus.INITIAL]: null,
     [ExtentedRouterStatus.LOADING]: null,
+    [ExtentedRouterStatus.SUCCESS]: null,
     [ExtentedRouterStatus.FAIL]: <Redirect to={redirectUrl || '/'} />,
   };
 
   const checkGuards = async () => {
     const result = [];
-    // eslint-disable-next-line no-restricted-syntax
     for (const guard of guards) {
       try {
-        // eslint-disable-next-line no-await-in-loop
         const guardResult = await guard.CanActivate();
         result.push(guardResult);
       } catch (e) {
@@ -86,7 +84,7 @@ const ExtendedRouter = ({
         strict: true,
       });
 
-      if (match && match.isExact) {
+      if ((match && match.isExact) || location.pathname.startsWith(path)) {
         startTimer();
 
         const guardStatus = guards.length ? await checkGuards() : ExtentedRouterStatus.SUCCESS;
@@ -110,36 +108,32 @@ const ExtendedRouter = ({
 
   const Component = component;
   if (status === ExtentedRouterStatus.SUCCESS) {
-    // console.log(childs.length);
     if (childs.length) {
       const childRoutes = childs.map(route => {
         const isValidChildPath = compareChildAndParentPath(route.path, path);
         if (!isValidChildPath) {
           throw new Error(`Child must start with parent path; Parent ${path} Child ${route.path}`);
         }
-        return <ExtendedRouter {...route} exact={false} key={route.path} redirectUrl={redirectUrl} location={location} />;
+        return <ExtendedRouter {...route} key={route.path} redirectUrl={redirectUrl} location={location} />;
       });
-
       return (
         <Route
-          exact={false}
+          exact={exact}
           path={path}
           render={props => {
-            if (childs.length && props.location.pathname === path && redirectToChild !== null) {
+            if (childs.length && props.location.pathname === path && redirectToChild !== false) {
               const childRedirectUrl = redirectToChild || childs[0].path;
               props.history.push(childRedirectUrl);
-              console.log('RETIURM');
               return;
             }
-            console.log('NOT RETURN', childRoutes);
-            return <Component {...props} exact={false} childRoutes={childRoutes} />;
+
+            return <Component {...props} exact={exact} childRoutes={childRoutes} />;
           }}
         />
       );
     }
-    console.log('NOT CHILDS', path);
 
-    return <Route exact={false} path={path} render={props => <Component {...props} exact={false} />} />;
+    return <Route exact={exact} path={path} render={props => <Component {...props} />} />;
   }
 
   return resultComponents[status];

@@ -8,9 +8,9 @@ export interface OwnProps {
   resolvers?: any[];
   debounceWaitTime?: number;
   childs?: any[];
-  redirectToChild?: string | null;
+  redirectToChild?: string | boolean;
   exact?: boolean;
   location?: any;
 }
 
-export type IProps = OwnProps;
+// export type IProps = OwnProps;

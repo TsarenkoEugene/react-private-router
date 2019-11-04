@@ -14,11 +14,11 @@ export const Routes = () => (
     <Link to="/">Home page</Link>
     <Link to="/test">Test page</Link>
     <Switch>
-      <ExtendedRouter exact={true} path="/" component={HomePage} />
+      {/* <ExtendedRouter exact={false} path="/home" component={HomePage} /> */}
       <ExtendedRouter
-        // exact={true}
+        exact={false}
         path="/test"
-        redirectToChild={null}
+        redirectToChild={false}
         component={SecondPage}
         childs={[
           {
