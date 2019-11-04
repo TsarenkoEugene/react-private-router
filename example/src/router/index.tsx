@@ -1,7 +1,7 @@
 import React from 'react';
 import { Switch, Router, Link } from 'react-router-dom';
 
-import { ExtendedRouter } from '../reactRouterAdvance';
+import { initializeRouter } from '../reactRouterAdvance';
 
 import { history } from './history';
 
@@ -10,6 +10,9 @@ import { TestGuard } from '../guards/test.guard';
 import { HomePage } from '../pages/home';
 import { SecondPage } from '../pages/second';
 import { ChildPage } from '../pages/second/child-page';
+
+const LoadingComponent = () => <h2>hello</h2>;
+const { ExtendedRouter } = initializeRouter({ loading: LoadingComponent });
 
 export const Routes = () => (
   <Router history={history}>

@@ -25,4 +25,7 @@ export interface Guard {
 export interface Resolver {
     Resolve(): Promise<void> | void;
 }
+export interface InitializeRouter {
+    loading?: any;
+}
 export declare type Props = RouteComponentProps & ExtendedRouterProps;

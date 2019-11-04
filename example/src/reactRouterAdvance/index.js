@@ -156,95 +156,98 @@ var setKey = function (path) {
     }
     return path;
 };
-//# sourceMappingURL=helpers.js.map
 
-var ExtendedRouter = function (_a) {
-    var _b;
-    var path = _a.path, component = _a.component, redirectUrl = _a.redirectUrl, _c = _a.guards, guards = _c === void 0 ? [] : _c, _d = _a.resolvers, resolvers = _d === void 0 ? [] : _d, _e = _a.debounceWaitTime, debounceWaitTime = _e === void 0 ? 500 : _e, _f = _a.childs, childs = _f === void 0 ? [] : _f, redirectToChild = _a.redirectToChild, exact = _a.exact, location = _a.location;
-    if (typeof location === 'undefined') {
-        throw new Error('Extended router must be wrapper in usual router!');
-    }
-    var savedTimer = useRef(0);
-    var savedTime = useRef(Date.now());
-    var _g = useState(ExtentedRouterStatus.INITIAL), status = _g[0], setStatus = _g[1];
-    var resultComponents = (_b = {},
-        _b[ExtentedRouterStatus.INITIAL] = null,
-        _b[ExtentedRouterStatus.LOADING] = React.createElement("h1", null, "Loading"),
-        _b[ExtentedRouterStatus.SUCCESS] = null,
-        _b[ExtentedRouterStatus.FAIL] = React.createElement(Redirect, { to: redirectUrl || '/' }),
-        _b);
-    var startTimer = function () {
-        savedTimer.current = setInterval(function () {
-            if (savedTime.current + debounceWaitTime < Date.now()) {
-                setStatus(ExtentedRouterStatus.LOADING);
+var initializeRouter = function (_a) {
+    var loading = (_a === void 0 ? {} : _a).loading;
+    var Loading = loading;
+    var ExtendedRouter = function (_a) {
+        var _b;
+        var path = _a.path, component = _a.component, redirectUrl = _a.redirectUrl, _c = _a.guards, guards = _c === void 0 ? [] : _c, _d = _a.resolvers, resolvers = _d === void 0 ? [] : _d, _e = _a.debounceWaitTime, debounceWaitTime = _e === void 0 ? 500 : _e, _f = _a.childs, childs = _f === void 0 ? [] : _f, redirectToChild = _a.redirectToChild, exact = _a.exact, location = _a.location;
+        if (typeof location === 'undefined') {
+            throw new Error('Extended router must be wrapper in usual router!');
+        }
+        var savedTimer = useRef(0);
+        var savedTime = useRef(Date.now());
+        var _g = useState(ExtentedRouterStatus.INITIAL), status = _g[0], setStatus = _g[1];
+        var resultComponents = (_b = {},
+            _b[ExtentedRouterStatus.INITIAL] = null,
+            _b[ExtentedRouterStatus.LOADING] = React.createElement(Loading, null) || React.createElement("h1", null, "Loading"),
+            _b[ExtentedRouterStatus.SUCCESS] = null,
+            _b[ExtentedRouterStatus.FAIL] = React.createElement(Redirect, { to: redirectUrl || '/' }),
+            _b);
+        var startTimer = function () {
+            savedTimer.current = setInterval(function () {
+                if (savedTime.current + debounceWaitTime < Date.now()) {
+                    setStatus(ExtentedRouterStatus.LOADING);
+                }
+            }, 30);
+        };
+        var clearTimer = function (guardStatus) {
+            if (guardStatus === ExtentedRouterStatus.SUCCESS || guardStatus === ExtentedRouterStatus.FAIL) {
+                clearInterval(savedTimer.current);
             }
-        }, 30);
-    };
-    var clearTimer = function (guardStatus) {
-        if (guardStatus === ExtentedRouterStatus.SUCCESS || guardStatus === ExtentedRouterStatus.FAIL) {
-            clearInterval(savedTimer.current);
-        }
-    };
-    useEffect(function () {
-        (function () { return __awaiter(void 0, void 0, void 0, function () {
-            var isMatch, guardStatus, _a, promises;
-            return __generator(this, function (_b) {
-                switch (_b.label) {
-                    case 0:
-                        isMatch = isPathMatched(location.pathname, path);
-                        if (!isMatch) return [3 /*break*/, 6];
-                        startTimer();
-                        if (!guards.length) return [3 /*break*/, 2];
-                        return [4 /*yield*/, checkGuards(guards)];
-                    case 1:
-                        _a = _b.sent();
-                        return [3 /*break*/, 3];
-                    case 2:
-                        _a = ExtentedRouterStatus.SUCCESS;
-                        _b.label = 3;
-                    case 3:
-                        guardStatus = _a;
-                        if (!(status === ExtentedRouterStatus.SUCCESS && resolvers.length)) return [3 /*break*/, 5];
-                        promises = resolvers.map(function (resolver) { return resolver.Resolve(); });
-                        return [4 /*yield*/, Promise.all(promises).catch(function (e) {
-                                console.error('Error in resolvers');
-                                console.error(e);
-                            })];
-                    case 4:
-                        _b.sent();
-                        _b.label = 5;
-                    case 5:
-                        setStatus(guardStatus);
-                        clearTimer(guardStatus);
-                        _b.label = 6;
-                    case 6: return [2 /*return*/];
-                }
-            });
-        }); })();
-    }, [location.pathname]);
-    var Component = component;
-    if (status === ExtentedRouterStatus.SUCCESS) {
-        if (childs.length) {
-            var childRoutes_1 = childs.map(function (route) {
-                var isValidChildPath = isChildPathStartWithParent(route.path, path);
-                if (!isValidChildPath) {
-                    throw new Error("Child must start with parent path; Parent " + path + " Child " + route.path);
-                }
-                return React.createElement(ExtendedRouter, __assign({}, route, { key: setKey(route.path), redirectUrl: redirectUrl, location: location }));
-            });
-            return (React.createElement(Route, { exact: exact, path: path, render: function (props) {
-                    if (childs.length && props.location.pathname === path && redirectToChild !== false) {
-                        var childRedirectUrl = redirectToChild || childs[0].path;
-                        props.history.push(childRedirectUrl);
-                        return;
+        };
+        useEffect(function () {
+            (function () { return __awaiter(void 0, void 0, void 0, function () {
+                var isMatch, guardStatus, _a, promises;
+                return __generator(this, function (_b) {
+                    switch (_b.label) {
+                        case 0:
+                            isMatch = isPathMatched(location.pathname, path);
+                            if (!isMatch) return [3 /*break*/, 6];
+                            startTimer();
+                            if (!guards.length) return [3 /*break*/, 2];
+                            return [4 /*yield*/, checkGuards(guards)];
+                        case 1:
+                            _a = _b.sent();
+                            return [3 /*break*/, 3];
+                        case 2:
+                            _a = ExtentedRouterStatus.SUCCESS;
+                            _b.label = 3;
+                        case 3:
+                            guardStatus = _a;
+                            if (!(status === ExtentedRouterStatus.SUCCESS && resolvers.length)) return [3 /*break*/, 5];
+                            promises = resolvers.map(function (resolver) { return resolver.Resolve(); });
+                            return [4 /*yield*/, Promise.all(promises).catch(function (e) {
+                                    console.error('Error in resolvers');
+                                    console.error(e);
+                                })];
+                        case 4:
+                            _b.sent();
+                            _b.label = 5;
+                        case 5:
+                            setStatus(guardStatus);
+                            clearTimer(guardStatus);
+                            _b.label = 6;
+                        case 6: return [2 /*return*/];
                     }
-                    return React.createElement(Component, __assign({}, props, { exact: exact, childRoutes: childRoutes_1 }));
-                } }));
+                });
+            }); })();
+        }, [location.pathname]);
+        var Component = component;
+        if (status === ExtentedRouterStatus.SUCCESS) {
+            if (childs.length) {
+                var childRoutes_1 = childs.map(function (route) {
+                    var isValidChildPath = isChildPathStartWithParent(route.path, path);
+                    if (!isValidChildPath) {
+                        throw new Error("Child must start with parent path; Parent " + path + " Child " + route.path);
+                    }
+                    return React.createElement(ExtendedRouter, __assign({}, route, { key: setKey(route.path), redirectUrl: redirectUrl, location: location }));
+                });
+                return (React.createElement(Route, { exact: exact, path: path, render: function (props) {
+                        if (childs.length && props.location.pathname === path && redirectToChild !== false) {
+                            var childRedirectUrl = redirectToChild || childs[0].path;
+                            props.history.push(childRedirectUrl);
+                            return;
+                        }
+                        return React.createElement(Component, __assign({}, props, { exact: exact, childRoutes: childRoutes_1 }));
+                    } }));
+            }
+            return React.createElement(Route, { exact: exact, path: path, render: function (props) { return React.createElement(Component, __assign({}, props)); } });
         }
-        return React.createElement(Route, { exact: exact, path: path, render: function (props) { return React.createElement(Component, __assign({}, props)); } });
-    }
-    return resultComponents[status];
+        return resultComponents[status];
+    };
+    return { ExtendedRouter: ExtendedRouter };
 };
-//# sourceMappingURL=index.js.map
 
-export { ExtendedRouter };
+export { initializeRouter };

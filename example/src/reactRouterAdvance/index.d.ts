@@ -1,2 +1,2 @@
-export { default as ExtendedRouter } from './router';
+export { default as initializeRouter } from './router';
 export { Guard, Resolver } from './router/types';
