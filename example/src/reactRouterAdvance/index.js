@@ -109,7 +109,22 @@ function useResolvers(resolvers) {
     function getProps() {
         return componentProps.current;
     }
-    return Object.assign({}, { loadResolvers: loadResolvers, getProps: getProps });
+    return { loadResolvers: loadResolvers, getProps: getProps };
+}
+function useTimer() {
+    var savedTimer = useRef(0);
+    var savedTime = useRef(Date.now());
+    function startTimer(debounceWaitTime, cb) {
+        savedTimer.current = setInterval(function () {
+            if (savedTime.current + debounceWaitTime < Date.now()) {
+                cb();
+            }
+        }, 30);
+    }
+    function clearTimer() {
+        clearInterval(savedTimer.current);
+    }
+    return { startTimer: startTimer, clearTimer: clearTimer };
 }
 //# sourceMappingURL=hooks.js.map
 
@@ -196,7 +211,6 @@ var setKey = function (path) {
     }
     return path;
 };
-//# sourceMappingURL=helpers.js.map
 
 var initializeRouter = function (_a) {
     var loading = (_a === void 0 ? {} : _a).loading;
@@ -208,8 +222,7 @@ var initializeRouter = function (_a) {
             throw new Error('Extended router must be wrapper in usual router!');
         }
         var resolverManager = useResolvers(resolvers);
-        var savedTimer = useRef(0);
-        var savedTime = useRef(Date.now());
+        var timerManager = useTimer();
         var _g = useState(ExtentedRouterStatus.INITIAL), status = _g[0], setStatus = _g[1];
         var resultComponents = (_b = {},
             _b[ExtentedRouterStatus.INITIAL] = null,
@@ -217,16 +230,9 @@ var initializeRouter = function (_a) {
             _b[ExtentedRouterStatus.SUCCESS] = null,
             _b[ExtentedRouterStatus.FAIL] = React.createElement(Redirect, { to: redirectUrl || '/' }),
             _b);
-        var startTimer = function () {
-            savedTimer.current = setInterval(function () {
-                if (savedTime.current + debounceWaitTime < Date.now()) {
-                    setStatus(ExtentedRouterStatus.LOADING);
-                }
-            }, 30);
-        };
         var clearTimer = function (guardStatus) {
             if (guardStatus === ExtentedRouterStatus.SUCCESS || guardStatus === ExtentedRouterStatus.FAIL) {
-                clearInterval(savedTimer.current);
+                timerManager.clearTimer();
             }
         };
         useEffect(function () {
@@ -237,7 +243,9 @@ var initializeRouter = function (_a) {
                         case 0:
                             isMatch = isPathMatched(location.pathname, path);
                             if (!isMatch) return [3 /*break*/, 6];
-                            startTimer();
+                            timerManager.startTimer(debounceWaitTime, function () {
+                                setStatus(ExtentedRouterStatus.LOADING);
+                            });
                             if (!guards.length) return [3 /*break*/, 2];
                             return [4 /*yield*/, checkGuards(guards)];
                         case 1:

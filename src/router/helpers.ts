@@ -1,4 +1,4 @@
-import { Redirect, Route, matchPath } from 'react-router-dom';
+import { matchPath } from 'react-router-dom';
 
 import { ExtentedRouterStatus, Guard, RouterPath } from './types';
 

@@ -1,7 +1,7 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Redirect, Route } from 'react-router-dom';
 import { ExtendedRouterProps, ExtentedRouterStatus, InitializeRouter } from './types';
-import { useResolvers } from './hooks';
+import { useResolvers, useTimer } from './hooks';
 
 import { checkGuards, isPathMatched, setKey, isChildPathStartWithParent } from './helpers';
 const initializeRouter = ({ loading }: InitializeRouter = {}) => {
@@ -22,9 +22,7 @@ const initializeRouter = ({ loading }: InitializeRouter = {}) => {
       throw new Error('Extended router must be wrapper in usual router!');
     }
     const resolverManager = useResolvers(resolvers);
-
-    const savedTimer = useRef(0);
-    const savedTime = useRef(Date.now());
+    const timerManager = useTimer();
 
     const [status, setStatus] = useState(ExtentedRouterStatus.INITIAL);
 
@@ -35,16 +33,9 @@ const initializeRouter = ({ loading }: InitializeRouter = {}) => {
       [ExtentedRouterStatus.FAIL]: <Redirect to={redirectUrl || '/'} />,
     };
 
-    const startTimer = () => {
-      savedTimer.current = setInterval(() => {
-        if (savedTime.current + debounceWaitTime < Date.now()) {
-          setStatus(ExtentedRouterStatus.LOADING);
-        }
-      }, 30);
-    };
     const clearTimer = (guardStatus: ExtentedRouterStatus) => {
       if (guardStatus === ExtentedRouterStatus.SUCCESS || guardStatus === ExtentedRouterStatus.FAIL) {
-        clearInterval(savedTimer.current);
+        timerManager.clearTimer();
       }
     };
     useEffect(() => {
@@ -52,7 +43,9 @@ const initializeRouter = ({ loading }: InitializeRouter = {}) => {
         const isMatch = isPathMatched(location.pathname, path);
 
         if (isMatch) {
-          startTimer();
+          timerManager.startTimer(debounceWaitTime, () => {
+            setStatus(ExtentedRouterStatus.LOADING);
+          });
 
           const guardStatus = guards.length ? await checkGuards(guards) : ExtentedRouterStatus.SUCCESS;
 

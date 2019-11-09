@@ -28,5 +28,23 @@ export function useResolvers(resolvers: PropsResolvers) {
     return componentProps.current;
   }
 
-  return Object.assign({}, { loadResolvers, getProps });
+  return { loadResolvers, getProps };
+}
+
+export function useTimer() {
+  const savedTimer = useRef(0);
+  const savedTime = useRef(Date.now());
+
+  function startTimer(debounceWaitTime: number, cb: () => any) {
+    savedTimer.current = setInterval(() => {
+      if (savedTime.current + debounceWaitTime < Date.now()) {
+        cb();
+      }
+    }, 30);
+  }
+  function clearTimer() {
+    clearInterval(savedTimer.current);
+  }
+
+  return { startTimer, clearTimer };
 }
