@@ -1,3 +1,3 @@
 import React from 'react';
 
-export const ChildPage = () => <div>Test child page</div>;
+export const ChildPage = (props: any) => <div>{console.log(props)}Test child page</div>;

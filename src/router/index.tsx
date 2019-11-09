@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Redirect, Route } from 'react-router-dom';
 import { ExtendedRouterProps, ExtentedRouterStatus, InitializeRouter } from './types';
+import { useResolvers } from './hooks';
 
 import { checkGuards, isPathMatched, setKey, isChildPathStartWithParent } from './helpers';
 const initializeRouter = ({ loading }: InitializeRouter = {}) => {
@@ -10,7 +11,7 @@ const initializeRouter = ({ loading }: InitializeRouter = {}) => {
     component,
     redirectUrl,
     guards = [],
-    resolvers = [],
+    resolvers = {},
     debounceWaitTime = 500,
     childs = [],
     redirectToChild,
@@ -20,6 +21,8 @@ const initializeRouter = ({ loading }: InitializeRouter = {}) => {
     if (typeof location === 'undefined') {
       throw new Error('Extended router must be wrapper in usual router!');
     }
+    const resolverManager = useResolvers(resolvers);
+
     const savedTimer = useRef(0);
     const savedTime = useRef(Date.now());
 
@@ -53,12 +56,8 @@ const initializeRouter = ({ loading }: InitializeRouter = {}) => {
 
           const guardStatus = guards.length ? await checkGuards(guards) : ExtentedRouterStatus.SUCCESS;
 
-          if (status === ExtentedRouterStatus.SUCCESS && resolvers.length) {
-            const promises = resolvers.map(resolver => resolver.Resolve());
-            await Promise.all(promises).catch(e => {
-              console.error('Error in resolvers');
-              console.error(e);
-            });
+          if (guardStatus === ExtentedRouterStatus.SUCCESS && Object.keys(resolvers).length) {
+            await resolverManager.loadResolvers();
           }
 
           setStatus(guardStatus);
@@ -67,7 +66,6 @@ const initializeRouter = ({ loading }: InitializeRouter = {}) => {
         }
       })();
     }, [location.pathname]);
-
     const Component = component;
     if (status === ExtentedRouterStatus.SUCCESS) {
       if (childs.length) {
@@ -89,13 +87,15 @@ const initializeRouter = ({ loading }: InitializeRouter = {}) => {
                 return;
               }
 
-              return <Component {...props} exact={exact} childRoutes={childRoutes} />;
+              return <Component {...props} exact={exact} childRoutes={childRoutes} {...resolverManager.getProps()} />;
             }}
           />
         );
       }
 
-      return <Route exact={exact} path={path} render={props => <Component {...props} />} />;
+      return (
+        <Route exact={exact} path={path} render={props => <Component {...props} {...resolverManager.getProps()} />} />
+      );
     }
 
     return resultComponents[status];

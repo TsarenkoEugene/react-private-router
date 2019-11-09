@@ -2,6 +2,8 @@ import { Redirect, Route, matchPath } from 'react-router-dom';
 
 import { ExtentedRouterStatus, Guard, RouterPath } from './types';
 
+export const sleep = (t: number) => new Promise(res => setTimeout(() => res(), t));
+
 const checkIfPathIsUndefined = (path: RouterPath) => {
   if (typeof path === 'undefined') {
     throw new Error(`Path for component is undefined. Please provide path`);

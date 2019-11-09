@@ -6,7 +6,7 @@ export interface ExtendedRouterProps {
     component: ElementType;
     redirectUrl?: string;
     guards?: Guard[];
-    resolvers?: Resolver[];
+    resolvers?: PropsResolvers;
     debounceWaitTime?: number;
     childs?: ExtendedRouterProps[];
     redirectToChild?: string | boolean;
@@ -18,6 +18,9 @@ export declare enum ExtentedRouterStatus {
     LOADING = 1,
     SUCCESS = 2,
     FAIL = 3
+}
+export interface PropsResolvers {
+    [index: string]: Resolver;
 }
 export interface Guard {
     CanActivate(): Promise<boolean> | boolean;
