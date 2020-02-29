@@ -7,7 +7,6 @@ export interface ExtendedRouterProps {
     redirectUrl?: string;
     guards?: Guard[];
     resolvers?: PropsResolvers;
-    debounceWaitTime?: number;
     childs?: ExtendedRouterProps[];
     redirectToChild?: string | boolean;
     exact?: boolean;
@@ -15,9 +14,8 @@ export interface ExtendedRouterProps {
 }
 export declare enum ExtentedRouterStatus {
     INITIAL = 0,
-    LOADING = 1,
-    SUCCESS = 2,
-    FAIL = 3
+    SUCCESS = 1,
+    FAIL = 2
 }
 export interface PropsResolvers {
     [index: string]: Resolver;
@@ -28,7 +26,7 @@ export interface Guard {
 export interface Resolver {
     Resolve(): Promise<void> | void;
 }
-export interface InitializeRouter {
-    loading?: any;
-}
 export declare type Props = RouteComponentProps & ExtendedRouterProps;
+export interface ParentComponentWithChildRoutes {
+    childRoutes: JSX.Element[];
+}

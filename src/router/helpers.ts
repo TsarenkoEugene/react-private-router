@@ -1,5 +1,5 @@
 import { matchPath } from 'react-router-dom';
-
+import * as UrlPattern from 'url-pattern';
 import { ExtentedRouterStatus, Guard, RouterPath, ExtendedRouterProps, PropsResolvers } from './types';
 
 export const sleep = (t: number) => new Promise(res => setTimeout(() => res(), t));
@@ -33,7 +33,10 @@ const isMatch = (basePath: string, path: string): boolean => {
     exact: false,
     strict: true,
   });
-  return (match && match.isExact) || basePath.startsWith(path);
+  const pattern = new UrlPattern(path);
+  const isChildNestedRoute = pattern.match(basePath.slice(0, basePath.lastIndexOf('/')));
+
+  return (match && match.isExact) || basePath.startsWith(path) || isChildNestedRoute;
 };
 
 export const isChildPathStartWithParent = (parentPath: RouterPath, childPath: RouterPath) => {
@@ -98,18 +101,6 @@ export const getAllMatchedRoutes = (
   const routesFlatMap = flatMapForChildren(extendedRoutes);
   const routes = routesFlatMap.filter(router => isPathMatched(currentPath, router.path));
   return routes;
-};
-
-export const getAllMathedResolvers = (currentPath: string, extendedRoutes: ExtendedRouterProps[]): PropsResolvers => {
-  const routes = getAllMatchedRoutes(currentPath, extendedRoutes);
-
-  const resolvers = routes.reduce((acc, next) => {
-    if (next.resolvers) {
-      return { ...acc, [setKey(next.path)]: next.resolvers };
-    }
-    return acc;
-  }, {});
-  return resolvers;
 };
 
 interface RouterHelper extends ExtendedRouterProps {

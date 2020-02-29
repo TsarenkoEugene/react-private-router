@@ -1,6 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import { Link } from 'react-router-dom';
+import { ParentComponentWithChildRoutes } from '../../../../../src/reactRouterAdvance';
 
 const StyledDiv = styled.div`
   padding: 10px;
@@ -12,7 +13,7 @@ const StyledDiv = styled.div`
   height: 100vh;
 `;
 
-export const TabPage = ({ childRoutes }: { childRoutes: any }) => {
+export const TabPage = ({ childRoutes }: ParentComponentWithChildRoutes) => {
   return (
     <StyledDiv>
       <h2 id="tab-page">Tab page</h2>

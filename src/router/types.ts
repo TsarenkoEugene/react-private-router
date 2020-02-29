@@ -1,9 +1,7 @@
-import { ElementType, ReactChild, ReactFragment, ReactPortal } from 'react';
+import { ElementType } from 'react';
 import { RouteComponentProps } from 'react-router-dom';
 
 export type RouterPath = string | string[] | undefined;
-
-type ReactNode = ReactChild | ReactFragment | ReactPortal | boolean;
 
 export interface ExtendedRouterProps {
   path: RouterPath;
@@ -11,7 +9,6 @@ export interface ExtendedRouterProps {
   redirectUrl?: string;
   guards?: Guard[];
   resolvers?: PropsResolvers;
-  debounceWaitTime?: number;
   childs?: ExtendedRouterProps[];
   redirectToChild?: string | boolean;
   exact?: boolean;
@@ -20,7 +17,6 @@ export interface ExtendedRouterProps {
 
 export enum ExtentedRouterStatus {
   INITIAL,
-  LOADING,
   SUCCESS,
   FAIL,
 }
@@ -34,8 +30,7 @@ export interface Resolver {
   Resolve(): Promise<void> | void;
 }
 
-export interface InitializeRouter {
-  loading?: any;
-}
-
 export type Props = RouteComponentProps & ExtendedRouterProps;
+export interface ParentComponentWithChildRoutes {
+  childRoutes: JSX.Element[];
+}

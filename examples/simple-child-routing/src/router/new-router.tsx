@@ -1,5 +1,5 @@
 import React from 'react';
-import { Switch, Router, Link } from 'react-router-dom';
+import { Switch, Router } from 'react-router-dom';
 
 import { ExtendedRouter } from '../../../src/reactRouterAdvance';
 import { HomePage } from '../pages/new/home-page';
@@ -10,6 +10,7 @@ import { StaticChild } from '../pages/new/tab-page/static-child-page';
 import { SecondStaticChild } from '../pages/new/tab-page/second-static-child-page';
 import { DynamicPathChildPage } from '../pages/new/tab-page/dynamic-path-child-page';
 import { DynamicParentStaticChild } from '../pages/new/tab-page/dynamic-path-child-page/static-child';
+import { DynamicParentSecondStaticChild } from '../pages/new/tab-page/dynamic-path-child-page/second-static-child';
 
 import { history } from './history';
 
@@ -37,6 +38,10 @@ export const Routes = () => (
               {
                 path: '/tab-page/dynamic-path-child-page/:id/static-child',
                 component: DynamicParentStaticChild,
+              },
+              {
+                path: '/tab-page/dynamic-path-child-page/bbbbb/second-static-child',
+                component: DynamicParentSecondStaticChild,
               },
             ],
           },
