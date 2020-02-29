@@ -10,6 +10,7 @@
   "license": "MIT",
   "types": "dist/index.d.ts",
   "devDependencies": {
+    "@types/faker": "^4.1.10",
     "@types/react": "^16.8.25",
     "@types/react-dom": "^16.8.5",
     "@types/react-router-dom": "^5.1.2",
@@ -17,6 +18,7 @@
     "@typescript-eslint/eslint-plugin": "^2.0.0",
     "@typescript-eslint/parser": "^2.0.0",
     "concurrently": "^4.1.1",
+    "cypress": "^4.1.0",
     "eslint": "^6.2.0",
     "eslint-config-prettier": "^6.0.0",
     "eslint-plugin-prettier": "^3.1.0",
@@ -25,6 +27,7 @@
     "prettier": "^1.18.2",
     "rollup": "^1.19.4",
     "rollup-plugin-typescript2": "^0.22.1",
+    "start-server-and-test": "^1.10.8",
     "ts-node": "^8.3.0",
     "tslib": "^1.10.0",
     "tslint-react": "^4.1.0",
@@ -38,13 +41,14 @@
     "build": "rollup -c",
     "build-watch": "rollup -c -w",
     "install-all": "npm i && cd example && npm i",
-    "start-example": "cd example && npm start",
+    "start:simple-routing-example": "cd examples/simple-child-routing && npm start",
     "deploy-example": "cd example && npm run deploy",
-    "dev": "concurrently --kill-others \"npm run build-watch\" \"npm run start-example\"",
+    "dev:simple": "concurrently --kill-others \"npm run build-watch\" \"npm run start:simple-routing-example\"",
     "test": "ts-node test/test.ts",
     "pretest": "npm run build",
-    "test:lint": "eslint ./src/**/*.ts ./src/**/*.tsx ./example/src/**/*.ts ./example/src/**/*.tsx",
-    "test:lint:fix": "npm run test:lint -- --fix"
+    "test:lint": "eslint ./src/**/*.ts ./src/**/*.tsx ./examples/simple-child-routing/src/**/*.ts ./examples/simple-child-routing/src/**/*.ts",
+    "test:lint:fix": "npm run test:lint -- --fix",
+    "cy:run": "cypress run"
   },
   "files": [
     "dist"
