@@ -40,15 +40,15 @@
   "scripts": {
     "build": "rollup -c",
     "build-watch": "rollup -c -w",
-    "install-all": "npm i && cd example && npm i",
-    "start:simple-routing-example": "cd examples/simple-child-routing && npm start",
+    "install-all": "npm i && cd examples/test && npm i",
+    "start:test": "cd examples/test && npm start",
     "deploy-example": "cd example && npm run deploy",
-    "dev:simple": "concurrently --kill-others \"npm run build-watch\" \"npm run start:simple-routing-example\"",
-    "test": "ts-node test/test.ts",
     "pretest": "npm run build",
-    "test:lint": "eslint ./src/**/*.ts ./src/**/*.tsx ./examples/simple-child-routing/src/**/*.ts ./examples/simple-child-routing/src/**/*.ts",
+    "dev:test": "concurrently --kill-others \"npm run build-watch\" \"npm run start:test\"",
+    "test:lint": "eslint ./src/**/*.ts ./src/**/*.tsx ./examples/test/src/**/*.ts ./examples/test/src/**/*.ts",
     "test:lint:fix": "npm run test:lint -- --fix",
-    "cy:run": "cypress run"
+    "cy:run": "cypress run",
+    "test": "start-server-and-test start:test http://localhost:3000 cy:run"
   },
   "files": [
     "dist"
