@@ -8,10 +8,12 @@ That lib can handle with guarding for the route, can handle async loading data b
 
 Let's take a look at guard
 
-> class FirstGuard {
-> CanActivate() {
-> return true;
-> }
-> }
+```sh
+class FirstGuard {
+  CanActivate() {
+  	return true;
+  }
+}
+```
 
 It's a simple class which must have one method **CanActivate** and that method must return **boolean**, **true** If the user has access to a certain page, **false** If the user hasn't had access
