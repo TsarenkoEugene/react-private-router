@@ -1,8 +1,8 @@
-import { Resolver, sleep } from '../reactRouterAdvance';
+import { Resolver, sleep } from '../../../src/reactRouterAdvance';
 
 export class MockDataResolver implements Resolver {
-  message: string;
-  constructor(message: string) {
+  message: any;
+  constructor(message: any) {
     this.message = message;
   }
   async Resolve(): Promise<any> {

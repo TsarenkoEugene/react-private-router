@@ -241,7 +241,7 @@ var ExtendedRouter = function (_a) {
                 if (!isValidChildPath) {
                     throw new Error("Child must start with parent path; Parent " + path + " Child " + route.path);
                 }
-                return React.createElement(ExtendedRouter, __assign({}, route, { key: setKey(route.path), redirectUrl: redirectUrl, location: location }));
+                return (React.createElement(ExtendedRouter, __assign({}, route, { key: setKey(route.path), redirectUrl: route.redirectUrl, location: location })));
             });
             return (React.createElement(Route, { exact: exact, path: path, render: function (props) {
                     if (childs.length && props.location.pathname === path && redirectToChild !== false) {

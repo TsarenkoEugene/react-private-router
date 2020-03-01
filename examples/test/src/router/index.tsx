@@ -1,86 +1,66 @@
 import React from 'react';
-import { Switch, Router, Link } from 'react-router-dom';
+import { Switch, Router } from 'react-router-dom';
 
-import { ExtendedRouter } from '../reactRouterAdvance';
+import { ExtendedRouter } from '../../../src/reactRouterAdvance';
+import { HomePage } from '../pages/home-page';
+import { IndependentPage } from '../pages/independent-page';
+import { TabPage } from '../pages/tab-page';
+
+import { StaticChild } from '../pages/tab-page/static-child-page';
+import { SecondStaticChild } from '../pages/tab-page/second-static-child-page';
+import { DynamicPathChildPage } from '../pages/tab-page/dynamic-path-child-page';
+import { DynamicParentStaticChild } from '../pages/tab-page/dynamic-path-child-page/static-child';
+import { DynamicParentSecondStaticChild } from '../pages/tab-page/dynamic-path-child-page/second-static-child';
+import { ShouldNeverSee } from '../pages/tab-page/dynamic-path-child-page/should-never-see';
+
+import { MockDataResolver } from '../resolvers/mock-data.resolver';
+import { MockGuard } from '../guards/mock.guard';
 
 import { history } from './history';
 
-import { TestGuard } from '../guards/test.guard';
-import { MockDataResolver } from '../resolvers/mock-data.resolver';
-
-import { HomePage } from '../pages/home';
-import { SecondPage } from '../pages/second';
-import { ChildPage } from '../pages/second/child-page';
-import { DeeperPage } from '../pages/second/deeper-child-page';
-
-const LoadingComponent = () => (
-  <section
-    style={{
-      position: 'fixed',
-      top: 0,
-      bottom: 0,
-      left: 0,
-      right: 0,
-      backgroundColor: 'red',
-      color: 'black',
-    }}
-  >
-    <h2>hello</h2>
-  </section>
-);
-
 export const Routes = () => (
   <Router history={history}>
-    <Link to="/">Home page</Link>
-    <Link to="/test">Test page</Link>
     <Switch>
-      {/* <ExtendedRouter exact={false} path="/home" component={HomePage} /> */}
+      <ExtendedRouter path="/" exact={true} component={HomePage} />
+      <ExtendedRouter exact={true} path="/independant-page" component={IndependentPage} />
       <ExtendedRouter
-        exact={false}
-        path="/test"
-        redirectToChild={false}
-        component={SecondPage}
-        resolvers={{
-          parent: new MockDataResolver('Parent Data 1'),
-          parent2: new MockDataResolver('Parent Data 2'),
-        }}
+        path="/tab-page"
+        component={TabPage}
         childs={[
           {
-            // guards: [new TestGuard()],
-            exact: false,
-            path: '/test/1',
-            component: ChildPage,
-            redirectToChild: false,
+            component: StaticChild,
+            path: '/tab-page/static-child',
             resolvers: {
-              child: new MockDataResolver('child 1'),
-              child2: new MockDataResolver('child 2'),
+              mockUserData: new MockDataResolver({ name: 'Joy', lastName: 'Doy' }),
+              mockUiData: new MockDataResolver({ color: 'blue' }),
             },
+          },
+          {
+            path: '/tab-page/second-static-child',
+            component: SecondStaticChild,
+          },
+          {
+            path: '/tab-page/dynamic-path-child-page/:id',
+            component: DynamicPathChildPage,
             childs: [
               {
-                // guards: [new TestGuard()],
-                path: '/test/1/2',
-                component: DeeperPage,
-                // resolvers: {
-                //   testData: new MockDataResolver('Hello testData child'),
-                //   testData2: new MockDataResolver('Hello testData2 child'),
-                // },
+                path: '/tab-page/dynamic-path-child-page/:id/static-child',
+                component: DynamicParentStaticChild,
+              },
+              {
+                path: '/tab-page/dynamic-path-child-page/:id/second-static-child',
+                component: DynamicParentSecondStaticChild,
+              },
+              {
+                path: '/tab-page/dynamic-path-child-page/:id/should-never-see',
+                component: ShouldNeverSee,
+                guards: [new MockGuard(false)],
+                redirectUrl: '/login',
               },
             ],
           },
-          {
-            // guards: [new TestGuard()],
-            exact: false,
-            path: '/test/home/:id',
-            component: ChildPage,
-            redirectToChild: false,
-            resolvers: {
-              child: new MockDataResolver('child 1'),
-              child2: new MockDataResolver('child 2'),
-            },
-          },
         ]}
       />
-      <ExtendedRouter exact={true} path="/" component={() => <h2>Home Page</h2>} />
     </Switch>
   </Router>
 );

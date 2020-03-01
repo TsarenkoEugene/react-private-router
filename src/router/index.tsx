@@ -52,7 +52,9 @@ export const ExtendedRouter = ({
         if (!isValidChildPath) {
           throw new Error(`Child must start with parent path; Parent ${path} Child ${route.path}`);
         }
-        return <ExtendedRouter {...route} key={setKey(route.path)} redirectUrl={redirectUrl} location={location} />;
+        return (
+          <ExtendedRouter {...route} key={setKey(route.path)} redirectUrl={route.redirectUrl} location={location} />
+        );
       });
       return (
         <Route
